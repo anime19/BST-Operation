@@ -1,94 +1,76 @@
-/* package codechef; // don't place package name! */
+import java.util.Scanner;
 
-import java.util.*;
-import java.lang.*;
-import java.io.*;
+public class Main {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
 
-/* Name of the class has to be "Main" only if the class is public. */
-class Codechef
-{
-    static Node root;
-    
-    static class Node {
-        int data, position;
-        Node left, right;
-        public Node(int data, int position){
-            this.data = data;
-            this.position = position;
-        }
-    }//end Node
-    
-    static Node insertNode(Node root, int data, int position){
-        if(root == null){
-            root = new Node(data, position);
-            System.out.println(position);
-            return root;
-        }
-        if(data < root.data){
-            root.left = insertNode(root.left, data, 2 * position);
-        }
-        else if(data > root.data){
-            root.right = insertNode(root.right, data, 2*position+1);
-        }
-        return root;
-    }//end insertNode
-    
-    static Node deleteNode(Node root, int data){
-        if(root == null){
-            return root;
-        }
-        if(data < root.data){
-            root.left = deleteNode(root.left, data);
-        }
-        else if(data > root.data){
-            root.right = deleteNode(root.right, data);
-        }
-        else{
-            System.out.println(root.position);
-            if(root.left == null){
-                return root.right;
-            }
-            else if(root.right == null){
-                return root.left;
-            }
-            else{
-                root.data = smallestValue(root.right);
-                root.right = deleteNode(root.right, root.data);
-            }
-        }
-        return root;
-    }//deleteNode
-    
-    static int smallestValue(Node root){
-        int low = root.data;
-        while(root.left != null){
-            low = root.left.data;
-            root = root.left;
-        }
-        return low;
-    }//end smallestValue
-	public static void main (String[] args) throws java.lang.Exception
-	{
-		Scanner in = new Scanner(System.in);
-		String[] input;
-		int totalInput = 0;
-		
-		totalInput = Integer.parseInt(in.nextLine());
-		
-		while(totalInput > 0){
-		    input = in.nextLine().split("[ ]");
-		    String operation = input[0];
-		    int data = Integer.parseInt(input[1]);
-		    
-		    if(operation.compareTo("i") == 0 ){
-		        root = insertNode(root, data, 1);
-		    }
-		    if(operation.compareTo("d") == 0){
-		        root = deleteNode(root, data);
-		    }
-		    totalInput -= 1;
+		BST bst = null;
+		int Q = sc.nextInt();
+		for (int i = 0; i < Q; i++) {
+			String command = sc.next();
+			int x = sc.nextInt();
+
+			if (command.equals("i")) {
+				bst = insert(bst, x, 1);
+			} else if (command.equals("d")) {
+				bst = delete(bst, x);
+			}
 		}
-		    
-			in.close();
-	}//end main
+
+		sc.close();
+	}
+
+	static BST insert(BST bst, int value, int position) {
+		if (bst == null) {
+			System.out.println(position);
+
+			return new BST(value, position);
+		}
+
+		if (value < bst.value) {
+			bst.left = insert(bst.left, value, position * 2);
+		} else {
+			bst.right = insert(bst.right, value, position * 2 + 1);
+		}
+		return bst;
+	}
+
+	static BST delete(BST bst, int value) {
+		if (value == bst.value) {
+			System.out.println(bst.position);
+
+			if (bst.left == null) {
+				return bst.right;
+			} else if (bst.right == null) {
+				return bst.left;
+			}
+
+			bst.value = getMinValue(bst.right);
+			bst.right = delete(bst.right, bst.value);
+		} else if (value < bst.value) {
+			bst.left = delete(bst.left, value);
+		} else {
+			bst.right = delete(bst.right, value);
+		}
+		return bst;
+	}
+
+	static int getMinValue(BST bst) {
+		while (bst.left != null) {
+			bst = bst.left;
+		}
+		return bst.value;
+	}
+}
+
+class BST {
+	int value;
+	int position;
+	BST left;
+	BST right;
+
+	BST(int value, int position) {
+		this.value = value;
+		this.position = position;
+	}
 }
