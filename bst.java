@@ -1,76 +1,85 @@
-import java.util.Scanner;
+/* package codechef; // don't place package name! */
 
-public class Main {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
+import java.util.*;
+import java.lang.*;
+import java.io.*;
 
-		BST bst = null;
-		int Q = sc.nextInt();
-		for (int i = 0; i < Q; i++) {
-			String command = sc.next();
-			int x = sc.nextInt();
+/* Name of the class has to be "Main" only if the class is public. */
+class BSTops
+{
+	 private Node root;
+    class Node{
+        int data,pos;
+        Node left,right;
+        public Node(int data,int pos){
+            this.data=data;
+            this.pos=pos;
+        }
+    }
+    public Node insert(Node node,int data,int pos){
+        if(node==null){
+            System.out.println(pos);
+            return new Node(data,pos);
+        }
+        if(data<node.data){
+            node.left=insert(node.left,data,2*pos);
+        }
+        else if(data>node.data){
+            node.right=insert(node.right,data,2*pos+1);
+        }
+        return node;
+    }
+    public Node delete(Node node,int data){
+        if(node!=null){
+            if(data<node.data){
+                node.left=delete(node.left,data);
+            }
+            else if(data>node.data){
+                node.right=delete(node.right,data);
+            }
+            else{
+                if(node.left==null){
+                    return node.right;
+                }
+                else if(node.right==null){
+                    return node.left;
+                }
+                else{
+                    node.data=findReplacement(node.right);
+                    node.right=delete(node.right,node.data);
+                }
+            }
+        }
+        return node;
+    }
+    public static int positionOf(Node node,int data){
+        if(data<node.data){
+            return positionOf(node.left,data);
+        }
+        else if(data>node.data){
+            return positionOf(node.right,data);
+        }
+        return node.pos;
+    }
+    int findReplacement(Node node){
+        while(node.left!=null){
+            node=node.left;
+        }
+        return node.data;
+    }
 
-			if (command.equals("i")) {
-				bst = insert(bst, x, 1);
-			} else if (command.equals("d")) {
-				bst = delete(bst, x);
-			}
-		}
-
-		sc.close();
-	}
-
-	static BST insert(BST bst, int value, int position) {
-		if (bst == null) {
-			System.out.println(position);
-
-			return new BST(value, position);
-		}
-
-		if (value < bst.value) {
-			bst.left = insert(bst.left, value, position * 2);
-		} else {
-			bst.right = insert(bst.right, value, position * 2 + 1);
-		}
-		return bst;
-	}
-
-	static BST delete(BST bst, int value) {
-		if (value == bst.value) {
-			System.out.println(bst.position);
-
-			if (bst.left == null) {
-				return bst.right;
-			} else if (bst.right == null) {
-				return bst.left;
-			}
-
-			bst.value = getMinValue(bst.right);
-			bst.right = delete(bst.right, bst.value);
-		} else if (value < bst.value) {
-			bst.left = delete(bst.left, value);
-		} else {
-			bst.right = delete(bst.right, value);
-		}
-		return bst;
-	}
-
-	static int getMinValue(BST bst) {
-		while (bst.left != null) {
-			bst = bst.left;
-		}
-		return bst.value;
-	}
-}
-
-class BST {
-	int value;
-	int position;
-	BST left;
-	BST right;
-
-	BST(int value, int position) {
-		this.value = value;
-		this.position = position;
-	}
+    public static void main(String[] args) throws IOException {
+        BSTops tree=new BSTops();
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        int q=Integer.parseInt(br.readLine());
+        while(q-->0){
+            String[] command=br.readLine().split("\\s");
+            if(command[0].equals("i")){
+                tree.root=tree.insert(tree.root,Integer.parseInt(command[1]),1);
+            }else{
+                System.out.println(positionOf(tree.root,Integer.parseInt(command[1])));
+                tree.root=tree.delete(tree.root,Integer.parseInt(command[1]));
+            }
+        }
+    }
 }
